@@ -2,46 +2,24 @@ from PIL import Image
 import numpy as np
 import matplotlib.pyplot as plt
 
+kernel = np.array([[-1, -2, -1],
+                   [0,   0,  0],
+                   [1,   2,  1]])
 
-def conta(img, i, j):
-    print(i,j)
+kernel2 = np.array([[1, 1, 1],
+                    [1, 1, 1],
+                    [1, 1, 1]])
 
+print(kernel*kernel2)
 
-def contaPalito(img):
-    shape = img.shape
+# def conv2D(img, kernel):
+# print(np.flip(kernel))
 
-    col = shape[0]/2
+def getSubImg(img, i, j):
 
-    for i in range(0, shape[2]):
-        if(img[i][col] == 255):
-            conta(img, i, col)
-
-
-img = Image.open('images/Fig8.02.jpg')
-# plt.figure()
-# plt.plot(img.histogram())
-
-img = np.array(img)
-# print(img)
-histograma = np.zeros(256)
-
-shape = img.shape
-for i in range(0, shape[0]):
-    for j in range(0, shape[1]):
-        histograma[img[i][j]] += 1
-
-# plt.figure(2)
-# plt.plot(histograma)
-# plt.show()
-
-THRESHOLD = 160
+    np.array([[img[i-1][j-1], img[i-1][j], img[i-1][j+1]],
+              [img[i][j-1],   img[i][j],   img[i][j+1]],
+              [img[i+1][j-1], img[i+1][j], img[i+1][j+1]]])
 
 for i in range(0, shape[0]):
     for j in range(0, shape[1]):
-        if (img[i][j] >= THRESHOLD):
-            img[i][j] = 255
-        else:
-            img[i][j] = 0
-
-im = Image.fromarray(img)
-im.show()
