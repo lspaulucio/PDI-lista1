@@ -11,7 +11,7 @@ def conta(img, i, j):
     shape = img.shape
 
     # Testing indexes
-    if(i < 0 or i > shape[0] or j < 0 or j > shape[1]):
+    if(i < 0 or i > (shape[0] - 1) or j < 0 or j > (shape[1] - 1)):
         return 0
 
     # Recursion
@@ -59,6 +59,7 @@ def binarizaImg(img, threshold):
 
     return newImg
 
+
 img = Image.open('images/Fig8.02.jpg')
 # # plt.figure()
 # # plt.plot(img.histogram())
@@ -76,5 +77,5 @@ plt.show()
 THRESHOLD = 160
 imgBin = binarizaImg(img, THRESHOLD)
 im = Image.fromarray(imgBin)
-contaPalito(img)
 im.show()
+contaPalito(img)
