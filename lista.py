@@ -2,13 +2,13 @@ from PIL import Image
 import numpy as np
 import matplotlib.pyplot as plt
 
-kernel = np.array([[-1, -2, -1],
-                   [0,   0,  0],
-                   [1,   2,  1]])
+kernel = np.array([[1.0/9.0, 1.0/9.0, 1.0/9.0],
+                   [1.0/9.0, 1.0/9.0, 1.0/9.0],
+                   [1.0/9.0, 1.0/9.0, 1.0/9.0]])
 
-kernel2 = np.array([[1, 1, 1],
-                    [1, 1, 1],
-                    [1, 1, 1]])
+laplace = np.array([[-1, -1, -1],
+                    [-1,  9, -1],
+                    [-1, -1, -1]])
 
 # print(kernel*kernel2)
 
@@ -20,8 +20,10 @@ def getSubImg(img, i, j):
               [img[i+1][j-1], img[i+1][j], img[i+1][j+1]]])
 
 
-def getOutputSize(old_shape,kernel_shape, padding, stride):
-    return int((old_shape + 2*padding - kernel_shape)/stride + 1)
+def getOutputSize(old_shape, kernel_shape, padding, stride):
+    return int((old_shape[0] + 2*padding - kernel_shape[0])/stride + 1), \
+           int((old_shape[1] + 2*padding - kernel_shape[1])/stride + 1)
+
 
 def getNewSize(shape, padding):
     return int((shape + 2*padding))
@@ -29,6 +31,7 @@ def getNewSize(shape, padding):
 
 def conv2D(img, kernel, stride=1, padding=1, padding_value=0):
     shape = []
+    paddedImg = []
     newImg = []
     for i in range(0, 2):
         size = getNewSize(img.shape[i], padding)
@@ -37,18 +40,26 @@ def conv2D(img, kernel, stride=1, padding=1, padding_value=0):
     kernel = np.flip(kernel)
 
     if padding_value == 0:
-        newImg = np.zeros((shape))
+        paddedImg = np.zeros((shape))
     elif padding_value == 1:
-        newImg = np.ones((shape))
+        paddedImg = np.ones((shape))
 
-    newImg[padding:-padding, padding:-padding] = img
+    paddedImg[padding:-padding, padding:-padding] = img
+    newImg = np.zeros((getOutputSize(img.shape, kernel.shape, padding, stride)))
+    print(newImg.shape)
+    x = kernel.shape[0]
+    y = kernel.shape[1]
+    print(kernel.shape)
+    for i in range(0, newImg.shape[0]):
+        for j in range(0, newImg.shape[1]):
+            newImg[i][j] = (kernel * paddedImg[i:(i+y), j:(j+x)]).sum()
 
-    
-
+    return newImg
 
 
 img = Image.open('images/lena.tif')
-img.show()
+# img.show()
 img = np.array(img)
-# print(img.shape)
-conv2D(img, kernel, padding=1)
+print(img.shape)
+img = conv2D(img, kernel, padding=1)
+Image.fromarray(img).show()
