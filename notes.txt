@@ -1,0 +1,92 @@
+Convolution is a mathematical operation that blends two functions relative to the overlap of one function as it
+is shifted over another. Although MATLAB contains a pre-built convolution function, it is possible to calculate
+the discrete convolution integral yourself. The discrete convolution of two functions f and g is defined as the
+um over the range 0 to j of f(j) * g(k-j).
+MATLAB contains a pre-built convolution function.
+credit: Thinkstock Images/Comstock/Getty Images
+Step
+
+Define two vectors, f and g, containing the two functions you want to convolve. The lengths of f and g do not
+have to be equal. The length of result of the convolution, k, will be one less than the sum of the length of f
+and g:
+
+m = length(f); n = length(g); k = m + n - 1;
+Step
+
+Define the range j over which the convolution will occur. The value of j is the range where subscripts of the
+two functions to be convolved, f(j) and g(k+1-n), are legal. The value of 1 added to k is to account for the
+fact that MATLAB begins indexing vectors at 1 rather than 0:
+Video of the Day
+
+j = max(1,k+1-n):min(k,m)
+Step
+
+Preallocate space for the result of the convolution:
+
+my_result = zeros(k);
+Step
+
+Write a for loop to iterate through values of k:
+
+for result_index = 1:k
+Step
+
+Calculate the convolution for all values of j:
+
+my_result(k) = sum(f(j) .* g(k-j+1));
+Step
+
+Close the for loop with the "end" command.
+
+import numpy as np
+
+def naive_correlation(image, kernel):
+    image_padded = np.zeros((image.shape[0] + 2, image.shape[1] + 2))
+    image_padded[1:-1, 1:-1] = image
+    out = np.zeros_like(image)
+    for x in range(image.shape[1]):image
+        for y in range(image.shape[0]):
+            out[y, x] = (kernel * image_padded[y:y + 3, x:x + 3]).sum()
+    return out
+
+
+stride é o passo do kernel
+padding é o preenchimento para manter size
+
+http://www.songho.ca/dsp/convolution/convolution2d_example.
+https://adeshpande3.github.io/A-Beginner%27s-Guide-To-Understanding-Convolutional-Neural-Networks-Part-2/
+
+def convo2D(img, kernel, stride=1, padding=1, padding_value=0):
+    shape = []
+    paddedImg = []
+    newImg = []
+    for i in range(0, 2):
+        size = getNewSize(img.shape[i], padding)
+        shape.append(size)
+
+    kernel = np.flip(kernel)
+
+    if padding_value == 0:
+        paddedImg = np.zeros((shape))
+    elif padding_value == 1:
+        paddedImg = np.ones((shape))
+
+    paddedImg[padding:-padding, padding:-padding] = img
+    newSize = getOutputSize(img.shape, kernel.shape, padding, stride)
+    newImg = np.zeros((newSize))
+    print(newImg.shape)
+    x = int(kernel.shape[0] / 2)
+    y = int(kernel.shape[1] / 2)
+    print(kernel.shape)
+    l, c = 0, 0
+    for i in range(x, newSize[0], stride):
+        for j in range(y, newSize[1], stride):
+            newImg[l][c] = (kernel * paddedImg[i-x:i+x+1, j-y:j+y+1]).sum()
+            c += 1
+            if c == newSize[1] - 1:
+                c = 0
+        l += 1
+        if l == newSize[0] - 1:
+            l = 0
+
+    return newImg
