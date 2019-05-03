@@ -90,3 +90,6 @@ def convo2D(img, kernel, stride=1, padding=1, padding_value=0):
             l = 0
 
     return newImg
+
+    
+https://dsp.stackexchange.com/questions/16586/difference-between-discrete-time-fourier-transform-and-discrete-fourier-transfor
