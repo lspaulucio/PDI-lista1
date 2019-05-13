@@ -15,5 +15,7 @@ img = np.array(img)
 img_laplace = ml.conv2D(img, ml.LAPLACE_FILTER)
 img_lowfilter = ml.conv2D(img, ml.MEAN_FILTER)
 
+np.uint8(img/np.max(img) * 255)
+
 Image.fromarray(img_laplace).show(title="Laplaciano")
 Image.fromarray(img_lowfilter).show(title="Filtro passa baixo (média)")

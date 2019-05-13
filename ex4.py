@@ -38,7 +38,7 @@ def freqspace(shape):
     return u, v
 
 
-img = Image.open('images/Fig10.10(a).jpg')
+img = Image.open('images/lena.tif')
 img = np.array(img)
 
 shape = img.shape[0]*2, img.shape[1]*2
@@ -56,13 +56,15 @@ u, v = freqspace(G.shape)
 u = u * y / 2
 v = v * x / 2
 D = np.sqrt(u**2 + v**2)
-D0 = 200
-H = np.zeros(G.shape)
+D0 = 30
+# criar funcao
+H = np.ones(G.shape)
 # H[D <= D0] = 1 # filtro ideal com corte em 30.
-H = 1./(1+(D/D0)**(2*20))
+# H = 1./(1+(D/D0)**(2*20))
+H /= (1+(D/D0)**(2*1))
 
 F = G * H
-F = fft.fftshift(F)
+F = fft.ifftshift(F)
 F = np.real(fft.ifft2(F))
 F = F[0:img.shape[0], 0:img.shape[1]]
 # print(F.shape)
