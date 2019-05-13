@@ -1,7 +1,10 @@
+# -*- coding: utf-8 -*-
 from PIL import Image
 import numpy as np
 import matplotlib.pyplot as plt
 import sys
+
+import MyLib as ml
 
 # Python configuration
 sys.setrecursionlimit(5000)
@@ -36,46 +39,22 @@ def contaPalito(img):
             i += 1
 
 
-def calculaHistograma(img):
-    shape = img.shape
-    histograma = np.zeros(256)
-
-    for i in range(0, shape[0]):
-        for j in range(0, shape[1]):
-            histograma[img[i][j]] += 1
-
-    return histograma
-
-
-def binarizaImg(img, threshold):
-    newImg = img
-    shape = img.shape
-    for i in range(0, shape[0]):
-        for j in range(0, shape[1]):
-            if (newImg[i][j] >= THRESHOLD):
-                newImg[i][j] = 255
-            else:
-                newImg[i][j] = 0
-
-    return newImg
-
-
 img = Image.open('images/Fig8.02.jpg')
-# # plt.figure()
 # # plt.plot(img.histogram())
 #
 img = np.array(img)
 # print(img)
 
-histograma = calculaHistograma(img)
+histograma = ml.calculaHistograma(img)
 
 plt.figure(2)
 plt.title("Histograma")
 plt.plot(histograma)
-plt.show()
+plt.show(block=False)
+
 
 THRESHOLD = 160
-imgBin = binarizaImg(img, THRESHOLD)
+imgBin = ml.binarizaImg(img, THRESHOLD)
 im = Image.fromarray(imgBin)
 im.show()
 contaPalito(img)
