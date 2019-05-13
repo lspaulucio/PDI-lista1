@@ -1,4 +1,11 @@
 # -*- coding: utf-8 -*-
+
+""" Processamento Digital de Imagens
+    Aluno: Leonardo Santos Paulucio
+    Lista de Exercicios 1 - Pós-Graduação
+    Data: 19/05/19
+"""
+
 from PIL import Image
 import numpy as np
 import MyLib as ml

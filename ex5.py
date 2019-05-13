@@ -38,7 +38,7 @@ def freqspace(shape):
     return u, v
 
 
-img = Image.open('images/Fig10.10(a).jpg')
+img = Image.open('images/mit_noise_periodic.jpg')
 img = np.array(img)
 
 shape = img.shape[0]*2, img.shape[1]*2
@@ -47,28 +47,32 @@ I_bg[0:img.shape[0], 0:img.shape[1]] = img
 
 G = fft.fft2(I_bg)
 G = fft.fftshift(G)
-# G = 20*np.log(np.abs(G))
+G = 20*np.log(np.abs(G))
+Image.fromarray(G).show()
 
-
-x, y = G.shape
-
-u, v = freqspace(G.shape)
-u = u * y / 2
-v = v * x / 2
-D = np.sqrt(u**2 + v**2)
-D0 = 200
-H = np.zeros(G.shape)
-# H[D <= D0] = 1 # filtro ideal com corte em 30.
-H = 1./(1+(D/D0)**(2*20))
-
-F = G * H
-F = fft.fftshift(F)
-F = np.real(fft.ifft2(F))
-F = F[0:img.shape[0], 0:img.shape[1]]
-# print(F.shape)
-Image.fromarray(F).show()
-
-# imshow(uint8(F))
-# H = 1./(1+(D./D0).^(2*n));
-
-# Image.fromarray(img).show()
+# x, y = G.shape
+# # if x % 2 == 0:
+#
+# u, v = freqspace(G.shape)
+# # G (2400, 3200)
+# u = u * y / 2
+# v = v * x / 2
+# D = np.sqrt(u**2 + v**2)
+# # D (3200, 2400)
+# D0 = 30
+# H = np.zeros(G.shape)
+# # H[D <= D0] = 1 # filtro ideal com corte em 30.
+# H = 1./(1+(D/D0)**(2*1))
+#
+# F = G * H
+# F = fft.fftshift(F)
+# F = np.real(fft.ifft2(F))
+# F = F[0:img.shape[0], 0:img.shape[1]]
+# # print(F.shape)
+# Image.fromarray(F).show()
+#
+# # imshow(uint8(F))
+# # H = 1./(1+(D./D0).^(2*n));
+# #
+# #
+# # Image.fromarray(img).show()
