@@ -52,17 +52,22 @@ G = fft.fftshift(G)
 
 x, y = G.shape
 
-u, v = freqspace(G.shape)
-u = u * y / 2
-v = v * x / 2
-D = np.sqrt(u**2 + v**2)
+# u, v = freqspace(G.shape)
+# u = u * y / 2
+# v = v * x / 2
+# D = np.sqrt(u**2 + v**2)
+D = np.zeros(G.shape)
+for u in range(0,G.shape[0]):
+    for v in range(0,G.shape[1]):
+        D[u][v] = np.sqrt((u-G.shape[0]/2)**2 + (v-G.shape[1]/2)**2)
+
 D0 = 30
 # criar funcao
-H = np.ones(G.shape)
+H = np.zeros(G.shape)
 # H[D <= D0] = 1 # filtro ideal com corte em 30.
-# H = 1./(1+(D/D0)**(2*20))
-H /= (1+(D/D0)**(2*1))
-
+H = 1./(1+(D/D0)**(2*20))
+# H /= (1+(D/D0)**(2*1))
+Image.fromarray(255*H).show()
 F = G * H
 F = fft.ifftshift(F)
 F = np.real(fft.ifft2(F))

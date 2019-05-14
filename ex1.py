@@ -35,19 +35,21 @@ def conta(img, i, j):
 def contaPalito(img):
     shape = img.shape
 
-    lin = int(shape[0]/2)
-    newImg = img
-    i = 1
+    lin = int(shape[0]/2)  # Getting the middle line
+    i = 0
+    d = {}
     for j in range(0, shape[1]):
-        if(newImg[lin][j] == 255):
+        if(img[lin][j] == 255):
             # print(lin, j)
-            tam = conta(newImg, lin, j)
-            print("Tamanho palito " + str(i) + " = " + str(tam))
+            tam = conta(img, lin, j)
             i += 1
+            d[i] = tam
+            print("Palito {}: área {}".format(i, tam))
+    print("Foram encontrados {} palitos.".format(i))
 
 
 img = Image.open('images/Fig8.02.jpg')
-# # plt.plot(img.histogram())
+# plt.plot(img.histogram())
 #
 img = np.array(img)
 # print(img)
@@ -56,11 +58,12 @@ histograma = ml.calculaHistograma(img)
 
 plt.figure(2)
 plt.title("Histograma")
-plt.plot(histograma)
+plt.bar(histograma[0], histograma[1])
 plt.show(block=False)
-
+plt.pause(0.001)
 
 THRESHOLD = 160
+
 imgBin = ml.binarizaImg(img, THRESHOLD)
 im = Image.fromarray(imgBin)
 im.show()

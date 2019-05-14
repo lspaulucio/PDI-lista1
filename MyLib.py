@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 
+
 def calculaHistograma(img):
     shape = img.shape
     histograma = np.zeros(256)
-
+    x = [i for i in range(0, 256)]
     for i in range(0, shape[0]):
         for j in range(0, shape[1]):
             histograma[int(img[i][j])] += 1
 
-    return histograma
+    return x, histograma
 
 
 def binarizaImg(img, threshold):
@@ -17,7 +18,7 @@ def binarizaImg(img, threshold):
     shape = img.shape
     for i in range(0, shape[0]):
         for j in range(0, shape[1]):
-            if (newImg[i][j] >= threshold):
+            if (newImg[i][j] > threshold):
                 newImg[i][j] = 255
             else:
                 newImg[i][j] = 0
@@ -65,7 +66,7 @@ def conv2D(img, kernel, stride=1, padding=1, padding_value=0):
     return newImg
 
 
-def medianFilter(img, kernel_shape=(3,3)):
+def medianFilter(img, kernel_shape=(3, 3)):
     newImg = np.zeros(img.shape)
     x = kernel_shape[0]
     y = kernel_shape[1]
@@ -83,8 +84,7 @@ def medianFilter(img, kernel_shape=(3,3)):
 
 # ############################# Filters ################################
 
-
-MEAN_FILTER = np.ones((3,3)) / 9.0
+MEAN_FILTER = np.ones((3, 3)) / 9.0
 
 MEAN_FILTER2 = 1/16. * np.array([[1, 2, 1],
                                  [2, 4, 2],

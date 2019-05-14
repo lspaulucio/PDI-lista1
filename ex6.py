@@ -64,7 +64,7 @@ H = np.zeros(G.shape)
 H = 1./(1+(D/D0)**(2*1))
 #
 F = G * H
-F = fft.fftshift(F)
+F = fft.ifftshift(F)
 F = np.real(fft.ifft2(F))
 F = F[0:img.shape[0], 0:img.shape[1]]
 
