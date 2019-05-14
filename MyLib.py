@@ -2,6 +2,14 @@
 import numpy as np
 
 
+def D(img):
+    D = np.zeros(img.shape)
+    for u in range(0, img.shape[0]):
+        for v in range(0, img.shape[1]):
+            D[u][v] = np.sqrt((u - img.shape[0]/2)**2 + (v - img.shape[1]/2)**2)
+    return D
+
+
 def calculaHistograma(img):
     shape = img.shape
     histograma = np.zeros(256)

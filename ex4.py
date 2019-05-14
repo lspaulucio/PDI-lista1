@@ -45,37 +45,44 @@ shape = img.shape[0]*2, img.shape[1]*2
 I_bg = np.zeros(shape)
 I_bg[0:img.shape[0], 0:img.shape[1]] = img
 
+# G = fft.fftshift(G)
+for u in range(0, I_bg.shape[0]):
+    for v in range(0, I_bg.shape[1]):
+        I_bg[u][v] *= (-1)**(u+v)
+
 G = fft.fft2(I_bg)
-G = fft.fftshift(G)
-# G = 20*np.log(np.abs(G))
+# Image.fromarray(20*np.log(np.abs(G))).show()
 
-
-x, y = G.shape
+# x, y = G.shape
 
 # u, v = freqspace(G.shape)
 # u = u * y / 2
 # v = v * x / 2
 # D = np.sqrt(u**2 + v**2)
 D = np.zeros(G.shape)
-for u in range(0,G.shape[0]):
-    for v in range(0,G.shape[1]):
+for u in range(0, G.shape[0]):
+    for v in range(0, G.shape[1]):
         D[u][v] = np.sqrt((u-G.shape[0]/2)**2 + (v-G.shape[1]/2)**2)
-
+# #
 D0 = 30
-# criar funcao
+# # # criar funcao
 H = np.zeros(G.shape)
-# H[D <= D0] = 1 # filtro ideal com corte em 30.
-H = 1./(1+(D/D0)**(2*20))
-# H /= (1+(D/D0)**(2*1))
-Image.fromarray(255*H).show()
+# # # H[D <= D0] = 1 # filtro ideal com corte em 30.
+# H = 1./(1+(D/D0)**(2*20))
+H = 1./(1+(D/D0)**(2*1))
+# Image.fromarray(255*H).show()
 F = G * H
-F = fft.ifftshift(F)
+# Image.fromarray(20*np.log(np.abs(F))).show()
 F = np.real(fft.ifft2(F))
+for u in range(0, F.shape[0]):
+    for v in range(0, F.shape[1]):
+        F[u][v] *= (-1)**(u+v)
+# F = fft.ifftshift(F)
 F = F[0:img.shape[0], 0:img.shape[1]]
-# print(F.shape)
-Image.fromarray(F).show()
-
-# imshow(uint8(F))
-# H = 1./(1+(D./D0).^(2*n));
-
-# Image.fromarray(img).show()
+# # # print(F.shape)
+# Image.fromarray(F).show()
+#
+# # imshow(uint8(F))
+# # H = 1./(1+(D./D0).^(2*n));
+#
+# # Image.fromarray(img).show()

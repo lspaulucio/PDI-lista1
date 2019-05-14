@@ -38,7 +38,7 @@ def freqspace(shape):
     return u, v
 
 
-img = Image.open('images/camisa.jpg')
+img = Image.open('images/mit_noise_periodic.jpg')
 img = np.array(img)
 # Image.fromarray(img).show()
 shape = img.shape[0]*2, img.shape[1]*2
@@ -47,7 +47,8 @@ I_bg[0:img.shape[0], 0:img.shape[1]] = img
 
 G = fft.fft2(I_bg)
 G = fft.fftshift(G)
-Image.fromarray(20*np.log(np.abs(G))).show()
+G = 20*np.log(np.abs(G))
+Image.fromarray(G).show()
 
 x, y = G.shape
 # # if x % 2 == 0:
