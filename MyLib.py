@@ -128,6 +128,17 @@ def imgFilter(img, D, D0=30, n=1, filterType='btw'):
     return H
 
 
+def notchFilter(img, D0, n, filterType='btw', center=None):
+    if center is None:
+        center = img.shape
+    D = np.zeros(img.shape)
+    for u in range(0, img.shape[0]):
+        for v in range(0, img.shape[1]):
+            for y, x in center:
+                D = np.sqrt((u - x)**2 + (v - y)**2)
+    return D
+
+
 def freqspace(shape):
     x, y = shape
     # For n even, both f1 and f2 are [-n:2:n-2]/n.

@@ -16,9 +16,9 @@ img = np.array(img)
 img = ml.conv2D(img, ml.MEAN_FILTER2)
 Image.fromarray(img).show()
 
-histograma = ml.calculaHistograma(img)
-plt.plot(histograma)
-plt.show()
+# histograma = ml.calculaHistograma(img)
+# plt.plot(histograma)
+# plt.show()
 
 im = ml.binarizaImg(img, 200)
 Image.fromarray(im).show()
