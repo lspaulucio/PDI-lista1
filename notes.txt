@@ -128,3 +128,5 @@ end
 Hlp = lpfilter(type, M, N, D0, n);
 H = 1 - Hlp;
 H = circshift(H, [y-1 x-1]);
+
+np.uint8(img/np.max(img) * 255)

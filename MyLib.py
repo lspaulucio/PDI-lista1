@@ -1,15 +1,6 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 
-
-def D(img):
-    D = np.zeros(img.shape)
-    for u in range(0, img.shape[0]):
-        for v in range(0, img.shape[1]):
-            D[u][v] = np.sqrt((u - img.shape[0]/2)**2 + (v - img.shape[1]/2)**2)
-    return D
-
-
 def calculaHistograma(img):
     shape = img.shape
     histograma = np.zeros(256)
@@ -105,3 +96,60 @@ LAPLACE_FILTER = np.array([[-1, -1, -1],
 SOBEL_FILTER = np.array([[1,   2,  1],
                          [0,   0,  0],
                          [-1, -2, -1]])
+
+
+# ############################ Frequence domain functions
+
+def frequenceSpace(img, center):
+    D = np.zeros(img.shape)
+    for u in range(0, img.shape[0]):
+        for v in range(0, img.shape[1]):
+            D[u][v] = np.sqrt((u - center[0])**2 + (v - center[1])**2)
+    return D
+
+
+def fshift(img):
+    for u in range(0, img.shape[0]):
+        for v in range(0, img.shape[1]):
+            img[u][v] *= (-1)**(u+v)
+    return img
+
+
+def extendImg(img):
+    newShape = img.shape[0]*2, img.shape[1]*2
+    I_bg = np.zeros(newShape)
+    I_bg[0:img.shape[0], 0:img.shape[1]] = img
+    return I_bg
+
+
+def imgFilter(img, D, D0=30, n=1, filterType='btw'):
+    H = np.zeros(img.shape)
+    H = 1./(1+(D/D0)**(2*n))
+    return H
+
+
+def freqspace(shape):
+    x, y = shape
+    # For n even, both f1 and f2 are [-n:2:n-2]/n.
+    # For n odd, both f1 and f2 are [-n+1:2:n-1]/n.
+    if x % 2 == 0:
+        x = [i/x for i in range(-x, x-2+1, 2)]
+    else:
+        x = [i/x for i in range(-x+1, x-1+1, 2)]
+
+    if y % 2 == 0:
+        y = [i/y for i in range(-y, y-2+1, 2)]
+    else:
+        y = [i/y for i in range(-y+1, y-1+1, 2)]
+
+    rows, cols = len(x), len(y)
+
+    u = np.zeros((rows, cols))
+    v = np.zeros((rows, cols))
+
+    for i in range(0, rows):
+        u[i] = y
+    for j in range(0, cols):
+        v[:, j] = x
+
+    return u, v

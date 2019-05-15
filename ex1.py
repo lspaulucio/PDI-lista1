@@ -48,19 +48,13 @@ def contaPalito(img):
     print("Foram encontrados {} palitos.".format(i))
 
 
+fig = plt.figure()
 img = Image.open('images/Fig8.02.jpg')
-# plt.plot(img.histogram())
-#
 img = np.array(img)
-# print(img)
 
 histograma = ml.calculaHistograma(img)
-
-plt.figure(2)
-plt.title("Histograma")
+plt.title("Histograma Original")
 plt.bar(histograma[0], histograma[1])
-plt.show(block=False)
-plt.pause(0.001)
 
 THRESHOLD = 160
 
@@ -68,3 +62,5 @@ imgBin = ml.binarizaImg(img, THRESHOLD)
 im = Image.fromarray(imgBin)
 im.show()
 contaPalito(img)
+
+plt.show()
