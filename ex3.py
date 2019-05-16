@@ -19,7 +19,7 @@ Image.fromarray(img).show()
 # histograma = ml.calculaHistograma(img)
 # plt.plot(histograma)
 # plt.show()
-
+############ FAZER FILTRO GAUSSIANO pg182 livro
 im = ml.binarizaImg(img, 200)
 Image.fromarray(im).show()
 

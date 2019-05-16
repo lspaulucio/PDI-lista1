@@ -24,8 +24,7 @@ G = fft.fft2(G)
 xc, yc = G.shape
 
 D0 = 30
-D = ml.frequenceSpace(G, (xc/2, yc/2))
-H = ml.imgFilter(G, D, D0, 1, 'btw')
+H = ml.imgFilter(G, D0, 1, 'btw')
 
 F = G * H
 F = np.real(fft.ifft2(F))

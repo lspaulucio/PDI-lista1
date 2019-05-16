@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 
+
 def calculaHistograma(img):
     shape = img.shape
     histograma = np.zeros(256)
@@ -10,6 +11,40 @@ def calculaHistograma(img):
             histograma[int(img[i][j])] += 1
 
     return x, histograma
+
+
+def equalizaHistograma(img):
+
+    x, histograma = calculaHistograma(img)
+
+    hist_eq = np.zeros(256)
+    hist_eq[0] = histograma[0]
+    for i in range(1, 256):
+        hist_eq[i] = hist_eq[i-1] + histograma[i]
+
+    h = (hist_eq - np.min(hist_eq))/(np.max(hist_eq) - np.min(hist_eq))*255
+
+    for i in range(0, img.shape[0]):
+        for j in range(0, img.shape[1]):
+            img[i][j] = h[int(img[i][j])]
+
+    return img
+
+
+def MSE(imgOld, imgNew):
+    size = imgOld.shape
+    sum = 0
+    print(imgOld.shape, imgNew.shape)
+    for i in range(0, size[0]):
+        for j in range(0, size[1]):
+            sum += (imgOld[i][j] - imgNew[i][j]) ** 2
+
+    return sum / (size[0]*size[1])
+
+
+def PSNR(imgOld, imgNew):
+    mse = MSE(imgOld, imgNew)
+    return 20 * np.log(np.max(imgOld)/np.sqrt(mse))
 
 
 def binarizaImg(img, threshold):
@@ -42,6 +77,7 @@ def conv2D(img, kernel, stride=1, padding=1, padding_value=0):
         size = getNewSize(img.shape[i], padding)
         shape.append(size)
 
+    # print(img.shape, shape) #padding 5 pra msm tamanho
     kernel = np.flip(kernel)
 
     if padding_value == 0:
@@ -85,6 +121,8 @@ def medianFilter(img, kernel_shape=(3, 3)):
 
 MEAN_FILTER = np.ones((3, 3)) / 9.0
 
+MEAN_FILTER3 = np.ones((11,11)) / (11*11)
+
 MEAN_FILTER2 = 1/16. * np.array([[1, 2, 1],
                                  [2, 4, 2],
                                  [1, 2, 1]])
@@ -122,7 +160,12 @@ def extendImg(img):
     return I_bg
 
 
-def imgFilter(img, D, D0=30, n=1, filterType='btw'):
+def imgFilter(img, D0=30, n=1, filterType='btw', center=None):
+    if center is None:
+        center = (img.shape[1]/2, img.shape[0]/2)
+
+    y, x = center
+    D = frequenceSpace(img, (x,y))
     H = np.zeros(img.shape)
     H = 1./(1+(D/D0)**(2*n))
     return H
@@ -130,13 +173,12 @@ def imgFilter(img, D, D0=30, n=1, filterType='btw'):
 
 def notchFilter(img, D0, n, filterType='btw', center=None):
     if center is None:
-        center = img.shape
-    D = np.zeros(img.shape)
-    for u in range(0, img.shape[0]):
-        for v in range(0, img.shape[1]):
-            for y, x in center:
-                D = np.sqrt((u - x)**2 + (v - y)**2)
-    return D
+        center = (img.shape[1]/2, img.shape[0]/2)
+
+    y, x = center
+    D = frequenceSpace(img, (x,y))
+    H = 1./(1+(D/D0)**(2*n))
+    return 1 - H
 
 
 def freqspace(shape):
@@ -164,3 +206,11 @@ def freqspace(shape):
         v[:, j] = x
 
     return u, v
+
+# def onclick(event):
+#     print('%s click: button=%d, x=%d, y=%d, xdata=%f, ydata=%f' %
+#           ('double' if event.dblclick else 'single', event.button,
+#            event.x, event.y, event.xdata, event.ydata))
+#
+#
+# cid = fig.canvas.mpl_connect('button_press_event', onclick)

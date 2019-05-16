@@ -22,13 +22,9 @@ G = ml.fshift(I_bg)
 G = fft.fft2(G)
 # Image.fromarray(20*np.log(np.abs(G))).show()
 
-xc, yc = G.shape
-D = ml.frequenceSpace(G, (xc/2, yc/2))
-
 D0 = 30
-
-H = ml.imgFilter(G, D, D0, 1, 'btw')
-# Image.fromarray(255*H).show()
+H = ml.imgFilter(G, D0, 1, 'btw')
+Image.fromarray(255*H).show()
 
 F = G * H
 # Image.fromarray(20*np.log(np.abs(F))).show()
@@ -36,7 +32,7 @@ F = G * H
 F = np.real(fft.ifft2(F))
 F = ml.fshift(F)
 F = F[0:img.shape[0], 0:img.shape[1]]
-# Image.fromarray(F).show()
+Image.fromarray(F).show()
 plt.imshow(F, cmap='gray')
 plt.axis('off')
 plt.show()

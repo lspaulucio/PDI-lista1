@@ -9,26 +9,33 @@
 from PIL import Image
 import numpy as np
 from numpy import fft
+import matplotlib.pyplot as plt
 
 import MyLib as ml
 
 img = Image.open('images/camisa.jpg')
 img = np.array(img)
 # Image.fromarray(img).show()
-
 I_bg = ml.extendImg(img)
 
 G = ml.fshift(I_bg)
 G = fft.fft2(G)
 # Image.fromarray(20*np.log(np.abs(G))).show()
+plt.imshow(20*np.log(np.abs(G)), cmap='gray')
+U, V = G.shape
 
-xc, yc = G.shape
-
-D0 = 30
-D = ml.frequenceSpace(G, (xc/2, yc/2))
-H = ml.imgFilter(G, D, D0, 1, 'btw')
+D0 = 150
+# 2400 3200
+# H = ml.notchFilter(G, D0, 5, center=(205, 381)) * \
+#     ml.notchFilter(G, D0, 5, center=(V-205, U-381))
+H = ml.imgFilter(G, 100, 2)
+plt.imshow(255*H, cmap='gray', alpha=0.3)
+plt.show()
+# xdata=205.262987, ydata=381.805195
+# Image.fromarray(255*H).show()
 F = G * H
-
+plt.imshow(20*np.log(np.abs(F)), cmap='gray')
+plt.show()
 F = np.real(fft.ifft2(F))
 F = ml.fshift(F)
 F = F[0:img.shape[0], 0:img.shape[1]]
