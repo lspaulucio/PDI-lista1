@@ -121,14 +121,14 @@ def medianFilter(img, kernel_shape=(3, 3)):
 
 MEAN_FILTER = np.ones((3, 3)) / 9.0
 
-MEAN_FILTER3 = np.ones((11,11)) / (11*11)
+MEAN_FILTER3 = np.ones((11, 11)) / (11*11)
 
 MEAN_FILTER2 = 1/16. * np.array([[1, 2, 1],
                                  [2, 4, 2],
                                  [1, 2, 1]])
 
 LAPLACE_FILTER = np.array([[-1, -1, -1],
-                           [-1,  8, -1],
+                           [-1,  9, -1],
                            [-1, -1, -1]])
 
 SOBEL_FILTER = np.array([[1,   2,  1],
@@ -165,9 +165,25 @@ def imgFilter(img, D0=30, n=1, filterType='btw', center=None):
         center = (img.shape[1]/2, img.shape[0]/2)
 
     y, x = center
-    D = frequenceSpace(img, (x,y))
+    D = frequenceSpace(img, (x, y))
     H = np.zeros(img.shape)
-    H = 1./(1+(D/D0)**(2*n))
+    W = 50
+    if filterType == 'btw':
+        H = 1./(1+(D/D0)**(2*n))
+    elif filterType == 'gaus':
+        H = 1 - np.exp(-((D**2 - D0**2)/(D*W+1))**2)
+        # H[D <= D0] = 1; filtro ideal com corte em 30
+    return H
+
+
+def filterH(img, D0=30, n=1, center=None, yh=2, yl=0.5, c=1):
+    if center is None:
+        center = (img.shape[1]/2, img.shape[0]/2)
+
+    y, x = center
+    D = frequenceSpace(img, (x, y))
+    H = np.zeros(img.shape)
+    H = (yh - yl) * (1 - np.exp(-c*(D**2)/(D0**2))) + yl
     return H
 
 
@@ -176,41 +192,6 @@ def notchFilter(img, D0, n, filterType='btw', center=None):
         center = (img.shape[1]/2, img.shape[0]/2)
 
     y, x = center
-    D = frequenceSpace(img, (x,y))
+    D = frequenceSpace(img, (x, y))
     H = 1./(1+(D/D0)**(2*n))
     return 1 - H
-
-
-def freqspace(shape):
-    x, y = shape
-    # For n even, both f1 and f2 are [-n:2:n-2]/n.
-    # For n odd, both f1 and f2 are [-n+1:2:n-1]/n.
-    if x % 2 == 0:
-        x = [i/x for i in range(-x, x-2+1, 2)]
-    else:
-        x = [i/x for i in range(-x+1, x-1+1, 2)]
-
-    if y % 2 == 0:
-        y = [i/y for i in range(-y, y-2+1, 2)]
-    else:
-        y = [i/y for i in range(-y+1, y-1+1, 2)]
-
-    rows, cols = len(x), len(y)
-
-    u = np.zeros((rows, cols))
-    v = np.zeros((rows, cols))
-
-    for i in range(0, rows):
-        u[i] = y
-    for j in range(0, cols):
-        v[:, j] = x
-
-    return u, v
-
-# def onclick(event):
-#     print('%s click: button=%d, x=%d, y=%d, xdata=%f, ydata=%f' %
-#           ('double' if event.dblclick else 'single', event.button,
-#            event.x, event.y, event.xdata, event.ydata))
-#
-#
-# cid = fig.canvas.mpl_connect('button_press_event', onclick)

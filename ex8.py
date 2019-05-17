@@ -14,7 +14,7 @@ import copy
 img = Image.open('images/ruidosa2.tif')
 img = np.array(img)
 imgOld = copy.deepcopy(img)
-img_laplace = ml.conv2D(img, ml.MEAN_FILTER3)
+img_laplace = ml.conv2D(img, ml.MEAN_FILTER3, padding=5) # padding 5 para manter o msm tamanho da imagem original
 # img_lowfilter = ml.conv2D(img, ml.MEAN_FILTER)
 print(ml.PSNR(imgOld, img_laplace))
 Image.fromarray(img_laplace).show(title="Laplaciano")

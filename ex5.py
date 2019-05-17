@@ -12,7 +12,7 @@ from numpy import fft
 
 import MyLib as ml
 
-img = Image.open('images/mit_noise_periodic.jpg')
+img = Image.open('images/mar-il.gif')
 img = np.array(img)
 
 I_bg = ml.extendImg(img)
@@ -23,8 +23,8 @@ G = fft.fft2(G)
 
 xc, yc = G.shape
 
-D0 = 30
-H = ml.imgFilter(G, D0, 1, 'btw')
+D0 = 80
+H = ml.filterH(G, D0, 5, yh=2, yl=0.25)
 
 F = G * H
 F = np.real(fft.ifft2(F))

@@ -98,35 +98,36 @@ https://dsp.stackexchange.com/questions/16586/difference-between-discrete-time-f
 
 http://www.cs.uregina.ca/Links/class-info/425/Lab5/index.html
 
-function H = notch(type, M, N, D0, x, y, n)
-%notch Computes frequency domain notch filters
-%   H = NOTCH(TYPE, M, N, D0, x, y, n) creates the transfer function of
-%   a notch filter, H, of the specified TYPE and size (M-by-N). centered at
-%   Column X, Row Y in an unshifted Fourier spectrum.
-%   Valid values for TYPE, D0, and n are:
-%
-%   'ideal'     Ideal highpass filter with cutoff frequency D0.  n
-%               need not be supplied.  D0 must be positive
-%
-%   'btw'       Butterworth highpass filter of order n, and cutoff D0.
-%               The default value for n is 1.0.  D0 must be positive.
-%
-%   'gaussian'  Gaussian highpass filter with cutoff (standard deviation)
-%               D0.  n need not be supplied.  D0 must be positive.
-%
+def freqspace(shape):
+    x, y = shape
+    # For n even, both f1 and f2 are [-n:2:n-2]/n.
+    # For n odd, both f1 and f2 are [-n+1:2:n-1]/n.
+    if x % 2 == 0:
+        x = [i/x for i in range(-x, x-2+1, 2)]
+    else:
+        x = [i/x for i in range(-x+1, x-1+1, 2)]
 
-% The transfer function Hhp of a highpass filter is 1 - Hlp,
-% where Hlp is the transfer function of the corresponding lowpass
-% filter.  Thus, we can use function lpfilter to generate highpass
-% filters.
+    if y % 2 == 0:
+        y = [i/y for i in range(-y, y-2+1, 2)]
+    else:
+        y = [i/y for i in range(-y+1, y-1+1, 2)]
 
-if nargin == 6
-   n = 1; % Default value of n.
-end
+    rows, cols = len(x), len(y)
 
-% Generate highpass filter.
-Hlp = lpfilter(type, M, N, D0, n);
-H = 1 - Hlp;
-H = circshift(H, [y-1 x-1]);
+    u = np.zeros((rows, cols))
+    v = np.zeros((rows, cols))
 
-np.uint8(img/np.max(img) * 255)
+    for i in range(0, rows):
+        u[i] = y
+    for j in range(0, cols):
+        v[:, j] = x
+
+    return u, v
+
+# def onclick(event):
+#     print('%s click: button=%d, x=%d, y=%d, xdata=%f, ydata=%f' %
+#           ('double' if event.dblclick else 'single', event.button,
+#            event.x, event.y, event.xdata, event.ydata))
+#
+#
+# cid = fig.canvas.mpl_connect('button_press_event', onclick)
