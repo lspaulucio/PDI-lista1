@@ -160,7 +160,7 @@ def extendImg(img):
     return I_bg
 
 
-def imgFilter(img, D0=30, n=1, filterType='btw', center=None):
+def imgFilter(img, D0=30, n=1, type='btw', center=None):
     if center is None:
         center = (img.shape[1]/2, img.shape[0]/2)
 
@@ -168,9 +168,9 @@ def imgFilter(img, D0=30, n=1, filterType='btw', center=None):
     D = frequenceSpace(img, (x, y))
     H = np.zeros(img.shape)
     W = 50
-    if filterType == 'btw':
+    if type == 'btw':
         H = 1./(1+(D/D0)**(2*n))
-    elif filterType == 'gaus':
+    elif type == 'gaus':
         H = 1 - np.exp(-((D**2 - D0**2)/(D*W+1))**2)
         # H[D <= D0] = 1; filtro ideal com corte em 30
     return H
@@ -187,11 +187,18 @@ def filterH(img, D0=30, n=1, center=None, yh=2, yl=0.5, c=1):
     return H
 
 
-def notchFilter(img, D0, n, filterType='btw', center=None):
+def notchFilter(img, D0, n=1, type='btw', center=None):
     if center is None:
         center = (img.shape[1]/2, img.shape[0]/2)
 
     y, x = center
     D = frequenceSpace(img, (x, y))
-    H = 1./(1+(D/D0)**(2*n))
+    if type == "btw":
+        H = 1./(1+(D/D0)**(2*n))
+    elif type == "gaus":
+        H = np.exp(-D**2/(2*D0**2))  # gaussiano LPF
+    elif type == "ideal":
+        H = np.zeros(D.shape)
+        H[D <= D0] = 1
+
     return 1 - H
