@@ -73,6 +73,5 @@ F = ml.fshift(F)
 F = F[0:img.shape[0], 0:img.shape[1]]
 
 Image.fromarray(F).show()
-F = ml.medianFilter(F, kernel_shape=(3, 3))
 F = ml.equalizaHistograma(F)
 Image.fromarray(F).show()

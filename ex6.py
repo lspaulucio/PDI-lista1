@@ -27,15 +27,18 @@ U, V = G.shape
 D0 = 150
 # 2400 3200
 # H = ml.notchFilter(G, D0, 5, center=(205, 381)) * \
-#     ml.notchFilter(G, D0, 5, center=(V-205, U-381))
+    # ml.notchFilter(G, D0, 5, center=(V-205, U-381))
 H = ml.imgFilter(G, 100, 2)
+# S = np.zeros(G.shape)
+# S[:, 220-5:220+5] = 1
+# S[:, 780-5:780+5] = 1
+# S = 1 - S
+# H *= S
 plt.imshow(255*H, cmap='gray', alpha=0.3)
 plt.show()
 # xdata=205.262987, ydata=381.805195
 # Image.fromarray(255*H).show()
 F = G * H
-plt.imshow(20*np.log(np.abs(F)), cmap='gray')
-plt.show()
 F = np.real(fft.ifft2(F))
 F = ml.fshift(F)
 F = F[0:img.shape[0], 0:img.shape[1]]
