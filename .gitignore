@@ -104,3 +104,18 @@ venv.bak/
 .mypy_cache/
 .project
 *~lock*
+.directory
+
+# Latex files
+*.aux 
+*.toc 
+*.log 
+*.dvi 
+*.out 
+*.gz 
+*.bbl 
+*.blg 
+*.idx 
+*.lot 
+*.brf 
+*.lof
