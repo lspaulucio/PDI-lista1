@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import copy
 import numpy as np
 import matplotlib as plt
 
@@ -78,8 +79,8 @@ def PSNR(imgOld, imgNew):
 
 
 def binarizaImg(img, threshold):
-    newImg = img
-    shape = img.shape
+    newImg = copy.deepcopy(img)
+    shape = newImg.shape
     for i in range(0, shape[0]):
         for j in range(0, shape[1]):
             if (newImg[i][j] > threshold):
