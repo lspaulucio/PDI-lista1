@@ -61,6 +61,5 @@ THRESHOLD = 160
 imgBin = ml.binarizaImg(img, THRESHOLD)
 im = Image.fromarray(imgBin)
 im.show()
-contaPalito(img)
-
+contaPalito(imgBin)
 plt.show()
