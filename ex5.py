@@ -24,10 +24,12 @@ G = fft.fft2(G)
 xc, yc = G.shape
 
 D0 = 80
-H = ml.filterH(G, D0, 5, yh=2, yl=0.25)
-
+H = ml.filterHomomorphic(G, D0, yh=2, yl=0.25)
 F = G * H
 F = np.real(fft.ifft2(F))
 F = ml.fshift(F)
 F = F[0:img.shape[0], 0:img.shape[1]]
-Image.fromarray(F).show()
+F = ml.equalizaHistograma(F)
+# Image.fromarray(F).show()
+images = [img, F]
+ml.show_images(images)

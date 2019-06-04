@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 import copy
 import numpy as np
-import matplotlib as plt
+import matplotlib.pyplot as plt
 
 
-def show_images(images, cols=1, titles=None):
+def show_images(images, cols=1, titles=None, axis=False, interpolation='gaussian'):
     """Display a list of images in a single figure with matplotlib.
 
     Parameters
@@ -23,11 +23,14 @@ def show_images(images, cols=1, titles=None):
     if titles is None:
         titles = ['Image (%d)' % i for i in range(1, n_images + 1)]
     fig = plt.figure()
+
     for n, (image, title) in enumerate(zip(images, titles)):
         a = fig.add_subplot(cols, np.ceil(n_images/float(cols)), n + 1)
+        if not axis:
+            plt.axis("off")
         if image.ndim == 2:
             plt.gray()
-        plt.imshow(image)
+        plt.imshow(image, cmap='gray', interpolation=interpolation)
         a.set_title(title)
     fig.set_size_inches(np.array(fig.get_size_inches()) * n_images)
     plt.show()
@@ -39,13 +42,19 @@ def calculaHistograma(img):
     x = [i for i in range(0, 256)]
     for i in range(0, shape[0]):
         for j in range(0, shape[1]):
-            histograma[int(img[i][j])] += 1
+            pos = int(img[i][j])
+            if pos < 0:
+                pos = 0
+            elif pos > 255:
+                pos = 255
+
+            histograma[pos] += 1
 
     return x, histograma
 
 
-def equalizaHistograma(img):
-
+def equalizaHistograma(image):
+    img = copy.deepcopy(image)
     x, histograma = calculaHistograma(img)
 
     hist_eq = np.zeros(256)
@@ -57,7 +66,12 @@ def equalizaHistograma(img):
 
     for i in range(0, img.shape[0]):
         for j in range(0, img.shape[1]):
-            img[i][j] = h[int(img[i][j])]
+            pos = int(img[i][j])
+            if pos < 0:
+                pos = 0
+            elif pos > 255:
+                pos = 255
+            img[i][j] = h[pos]
 
     return img
 
@@ -158,8 +172,12 @@ MEAN_FILTER2 = 1/16. * np.array([[1, 2, 1],
                                  [2, 4, 2],
                                  [1, 2, 1]])
 
-LAPLACE_FILTER = np.array([[-1, -1, -1],
+LAPLACE_FILTER2 = np.array([[-1, -1, -1],
                            [-1,  9, -1],
+                           [-1, -1, -1]])
+
+LAPLACE_FILTER = np.array([[-1, -1, -1],
+                           [-1,  8, -1],
                            [-1, -1, -1]])
 
 SOBEL_FILTER = np.array([[1,   2,  1],
@@ -203,11 +221,12 @@ def imgFilter(img, D0=30, n=1, type='btw', center=None):
         H = 1./(1+(D/D0)**(2*n))
     elif type == 'gaus':
         H = 1 - np.exp(-((D**2 - D0**2)/(D*W+1))**2)
-        # H[D <= D0] = 1; filtro ideal com corte em 30
+    elif type == 'ideal':
+        H[D <= D0] = 1
     return H
 
 
-def filterH(img, D0=30, n=1, center=None, yh=2, yl=0.5, c=1):
+def filterHomomorphic(img, D0=30, n=1, center=None, yh=2, yl=0.5, c=1):
     if center is None:
         center = (img.shape[1]/2, img.shape[0]/2)
 
