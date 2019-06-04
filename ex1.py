@@ -10,7 +10,7 @@ from PIL import Image
 import numpy as np
 import matplotlib.pyplot as plt
 import sys
-
+import copy
 import MyLib as ml
 
 # Python configuration
@@ -32,7 +32,8 @@ def conta(img, i, j):
         return 0
 
 
-def contaPalito(img):
+def contaPalito(image):
+    img = copy.deepcopy(image)
     shape = img.shape
 
     lin = int(shape[0]/2)  # Getting the middle line
@@ -59,7 +60,9 @@ plt.bar(histograma[0], histograma[1])
 THRESHOLD = 160
 
 imgBin = ml.binarizaImg(img, THRESHOLD)
-im = Image.fromarray(imgBin)
-im.show()
+
 contaPalito(imgBin)
-plt.show()
+
+images = [img, imgBin]
+titles = ["Imagem Original", "Imagem Binarizada"]
+ml.show_images(images, 1, titles)

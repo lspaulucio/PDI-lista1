@@ -10,37 +10,49 @@ from PIL import Image
 import numpy as np
 from numpy import fft
 import matplotlib.pyplot as plt
-
+import copy
 import MyLib as ml
+
+images = []
+titles = []
 
 img = Image.open('images/camisa.jpg')
 img = np.array(img)
+images.append(img)
 # Image.fromarray(img).show()
 I_bg = ml.extendImg(img)
-
 G = ml.fshift(I_bg)
 G = fft.fft2(G)
-# Image.fromarray(20*np.log(np.abs(G))).show()
-plt.imshow(20*np.log(np.abs(G)), cmap='gray')
+# Image.fromarray(20*np.log(np.abs(G+1))).show()
+images.append(20*np.log(np.abs(G+1)))
+# plt.imshow(20*np.log(np.abs(G)), cmap='gray')
 U, V = G.shape
 
 D0 = 150
-# 2400 3200
-# H = ml.notchFilter(G, D0, 5, center=(205, 381)) * \
-    # ml.notchFilter(G, D0, 5, center=(V-205, U-381))
-H = ml.imgFilter(G, 100, 2)
-# S = np.zeros(G.shape)
-# S[:, 220-5:220+5] = 1
-# S[:, 780-5:780+5] = 1
-# S = 1 - S
-# H *= S
-plt.imshow(255*H, cmap='gray', alpha=0.3)
-plt.show()
-# xdata=205.262987, ydata=381.805195
+H = ml.notchFilter(G, D0, 5, center=(205, 381)) * \
+    ml.notchFilter(G, D0, 5, center=(V-205, U-381))
+# H = ml.imgFilter(G, 100, 2)
+# plt.imshow(255*H, cmap='gray', alpha=0.3)
+# plt.show()
 # Image.fromarray(255*H).show()
+images.append(255*H)
 F = G * H
 F = np.real(fft.ifft2(F))
 F = ml.fshift(F)
 F = F[0:img.shape[0], 0:img.shape[1]]
+# Image.fromarray(F).show()
+images.append(copy.deepcopy(F))
 
-Image.fromarray(F).show()
+H = ml.imgFilter(G, 100, 2)
+# plt.imshow(255*H, cmap='gray', alpha=0.3)
+# plt.show()
+images.append(255*H)
+F = G * H
+F = np.real(fft.ifft2(F))
+F = ml.fshift(F)
+F = F[0:img.shape[0], 0:img.shape[1]]
+# Image.fromarray(F).show()
+images.append(copy.deepcopy(F))
+sortimages = [images[0], images[2], images[4], images[1], images[3], images[5]]
+titles = ["Imagem Original", "Filtro Notch", "Filtro Passa Baixa Butterworth", "FFT da Imagem Original", "Resultado com Filtro Notch", "Resultado com Filtro Butterworth"]
+ml.show_images(sortimages, 2, titles)
