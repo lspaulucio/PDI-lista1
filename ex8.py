@@ -27,20 +27,22 @@ def paddingImage(img, padding_size=1):
 # smax valor maximo da janela
 def adaptativeMedian(img, Smax):
     window_size = np.array([3, 3])  # window initial size
-    paddedImg = paddingImage(img, Smax[0])
+    padding_size = ml.getPaddingSize(img.shape, Smax)
+    paddedImg = paddingImage(img, padding_size)
     newImg = np.zeros(img.shape)
-    for i in range(0, newImg.shape[0]):
-        for j in range(0, newImg.shape[1]):
+    for i in range(padding_size, newImg.shape[0]):
+        for j in range(padding_size, newImg.shape[1]):
             temp_size = window_size
-            x, y = temp_size[0], temp_size[1]
             stepA = True
-            zmed = np.median(paddedImg[i:i+y, j:j+x])
-            zmin = np.min(paddedImg[i:i+y, j:j+x])
-            zmax = np.max(paddedImg[i:i+y, j:j+x])
-            print((i+y)//2,(j+x)//2)
-            zxy = paddedImg[(i+y)//2,(j+x)//2]
-            value = newImg[i, j]
+            value = 0
             while(stepA):
+                x, y = temp_size[0] // 2, temp_size[1] // 2
+                window = paddedImg[i-y:i+y+1, j-x:j+x+1]
+                print(window)
+                zmed = np.median(window)
+                zmin = np.min(window)
+                zmax = np.max(window)
+                zxy = paddedImg[i, j]
                 # StepA
                 a1 = zmed - zmin                 # a1 = zmed -zmin
                 a2 = zmed - zmax                 # a2 = zmed - zmax
@@ -55,8 +57,11 @@ def adaptativeMedian(img, Smax):
                         value = zmed             # senao saida e zmed
                         stepA = False
                 else:
+                    # print(temp_size)
                     temp_size += 2*np.ones(2, dtype=np.int)    # senao aumente sxy
+                    # print(temp_size)
                     if temp_size[0] <= Smax[0]:  # se window_size <= smax repita A
+                        print(temp_size)
                         stepA = True
                     else:
                         value = zmed             # senao saida e zmed

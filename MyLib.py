@@ -110,6 +110,10 @@ def getOutputSize(old_shape, kernel_shape, padding, stride):
            int((old_shape[1] + 2*padding - kernel_shape[1])/stride + 1)
 
 
+def getPaddingSize(shape, kernel_shape, stride=1):
+    return ((shape[0] - 1)*stride + kernel_shape[0] - shape[0]) // 2
+
+
 def getNewSize(shape, padding):
     return int((shape + 2*padding))
 
