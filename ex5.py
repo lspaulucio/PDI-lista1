@@ -29,7 +29,12 @@ F = G * H
 F = np.real(fft.ifft2(F))
 F = ml.fshift(F)
 F = F[0:img.shape[0], 0:img.shape[1]]
-F = ml.equalizaHistograma(F)
+
+FE = ml.equalizaHistograma(F)
 # Image.fromarray(F).show()
-images = [img, F]
-ml.show_images(images)
+G = ml.equalizaHistograma(img)
+images = [img, F, G, FE]
+
+titles = ["Imagem Original", "Resultado com Filtro Homomórfico", "Resultado com Equalização de Histograma",
+          "Combinação de Filtro Homomórfico e Equalização de Histograma"]
+ml.show_images(images, 2, titles)
