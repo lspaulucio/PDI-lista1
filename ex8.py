@@ -12,26 +12,12 @@ import MyLib as ml
 import copy
 
 
-def paddingImage(img, padding_size=1):
-    shape = img.shape
-    shape = (shape[0]+2*padding_size, shape[1]+2*padding_size)
-    new = np.zeros(shape)
-    new[padding_size:-padding_size, padding_size:-padding_size] = img
-    return new
-
-
-# zmin valor minimo de intensidade na janela
-# zmax valor maximo de intensidade na janela
-# zmed mediana de intensidade na janela
-# zxy valor do pixel
-# smax valor maximo da janela
 def adaptativeMedian(img, Smax):
     window_size = 3  # window initial size
     padding_size = ml.getPaddingSize(img.shape, Smax)
-    paddedImg = paddingImage(img, padding_size)
+    paddedImg = ml.paddingImage(img, padding_size, 'repeat')
     newImg = np.zeros(img.shape)
     for i in range(padding_size, newImg.shape[0]-padding_size):
-        print(i)
         for j in range(padding_size, newImg.shape[1]-padding_size):
             temp_size = window_size
             stepA = True
@@ -82,7 +68,9 @@ def adaptativeMedian(img, Smax):
 img = Image.open('images/ruidosa2.tif')
 img = np.array(img)
 imgOld = copy.deepcopy(img)
-imgT = adaptativeMedian(img, (11, 11))
+imgT = adaptativeMedian(img, (17, 17))
+# imgT = ml.medianFilter(img, kernel_shape=(7, 7))
+
 # img_laplace = ml.conv2D(img, ml.MEAN_FILTER3, padding=5)  # padding 5 para manter o msm tamanho da imagem original
 # # img_lowfilter = ml.conv2D(img, ml.MEAN_FILTER)
 # print(ml.PSNR(imgOld, img_laplace))

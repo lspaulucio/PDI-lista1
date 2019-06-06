@@ -118,6 +118,36 @@ def getNewSize(shape, padding):
     return int((shape + 2*padding))
 
 
+def paddingImage(img, padding_size=1, type='zeros'):
+    shape = img.shape
+    shape = (shape[0]+2*padding_size, shape[1]+2*padding_size)
+
+    if type == 'ones':
+        new = np.full(shape, 255)
+    else:
+        new = np.zeros(shape)
+
+    new[padding_size:-padding_size, padding_size:-padding_size] = img
+
+    if type == 'repeat':
+        for i in range(padding_size):
+            new[i, padding_size:-padding_size] = img[0]
+            new[-i-1, padding_size:-padding_size] = img[-1]
+
+        for i in range(padding_size):
+            new[padding_size:-padding_size,i] = img[:,0]
+            new[padding_size:-padding_size,-i-1] = img[:,-1]
+
+        for i in range(padding_size):
+            for j in range(padding_size):
+                new[i, j] = img[0, 0]           # upper left
+                new[-i-1, -j-1] = img[-1, -1]   # lower right
+                new[-i-1, j] = img[-1, 0]       # lower left
+                new[i, -j-1] = img[0, -1]       # upper right
+
+    return new
+
+
 def conv2D(img, kernel, stride=1, padding=1, padding_value=0):
     shape = []
     paddedImg = []
