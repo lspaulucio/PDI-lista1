@@ -9,72 +9,43 @@
 from PIL import Image
 import numpy as np
 import MyLib as ml
-import copy
 
+img1 = Image.open('images/ruidosa1.tif')
+img1 = np.array(img1)
 
-def adaptativeMedian(img, Smax):
-    window_size = 3  # window initial size
-    padding_size = ml.getPaddingSize(img.shape, Smax)
-    paddedImg = ml.paddingImage(img, padding_size, 'repeat')
-    newImg = np.zeros(img.shape)
-    for i in range(padding_size, newImg.shape[0]-padding_size):
-        for j in range(padding_size, newImg.shape[1]-padding_size):
-            temp_size = window_size
-            stepA = True
-            value = 0
-            while(stepA):
-                s = temp_size // 2
-                window = paddedImg[i-s:i+s+1, j-s:j+s+1]
-                # print(temp_size)
-                # print(i,j,s)
-                # print(window)
-                zmed = np.median(window)
-                zmin = np.min(window)
-                zmax = np.max(window)
-                zxy = paddedImg[i, j]
-                # StepA
-                a1 = zmed - zmin                 # a1 = zmed -zmin
-                a2 = zmed - zmax                 # a2 = zmed - zmax
-                if a1 > 0 and a2 < 0:            # se a1 > 0 e a2 <0 goto step B
-                    # stepB
-                    b1 = zxy - zmin              # b1 = zxy - zmin
-                    b2 = zxy - zmax              # b2 = zxy - zmax
-                    if b1 > 0 and b2 < 0:        # se b1 > 0 e b2 < 0
-                        value = zxy              # saida e zxy
-                        stepA = False
-                    else:
-                        value = zmed             # senao saida e zmed
-                        stepA = False
-                else:
-                    # print(temp_size)
-                    temp_size += 2               # senao aumente sxy
-                    # print(temp_size)
-                    if temp_size <= Smax[0]:  # se window_size <= smax repita A
-                        stepA = True
-                    else:
-                        value = zmed             # senao saida e zmed
-                        stepA = False
+img2 = Image.open('images/ruidosa2.tif')
+img2 = np.array(img2)
 
-            if value < 0:
-                value = 0
-            elif value > 255:
-                value = 255
-            newImg[i][j] = value
-        # print(i)
+imgOrig = Image.open('images/original.tif')
+imgOrig = np.array(imgOrig)
 
-    return newImg
+padding_size = ml.getPaddingSize(img1.shape, (11, 11))
+img1Media = ml.conv2D(img1, ml.MEAN_FILTER_11, padding=padding_size, padding_type='repeat')
+img1Mediana = ml.medianFilter(img1, (11, 11), padding_size, padding_type='repeat')
+img1MedianaAdaptativa = ml.adaptativeMedian(img1, (17, 17))
 
+titles1 = ["Imagem Original: ruidosa1.tif", "Filtro Média (11x11)", "Filtro Mediana", "Filtro Mediana Adaptativa"]
+images1 = [img1, img1Media, img1Mediana, img1MedianaAdaptativa]
 
-img = Image.open('images/ruidosa2.tif')
-img = np.array(img)
-imgOld = copy.deepcopy(img)
-imgT = adaptativeMedian(img, (17, 17))
-# imgT = ml.medianFilter(img, kernel_shape=(7, 7))
+print("PSNR da imagem: ruidosa1.tif")
+print("Original: {}".format(ml.PSNR(imgOrig, img1)))
+print("Media: {}".format(ml.PSNR(imgOrig, img1Media)))
+print("Mediana: {}".format(ml.PSNR(imgOrig, img1Mediana)))
+print("Mediana Adaptativa: {}".format(ml.PSNR(imgOrig, img1MedianaAdaptativa)))
 
-# img_laplace = ml.conv2D(img, ml.MEAN_FILTER3, padding=5)  # padding 5 para manter o msm tamanho da imagem original
-# # img_lowfilter = ml.conv2D(img, ml.MEAN_FILTER)
-# print(ml.PSNR(imgOld, img_laplace))
-# Image.fromarray(img_laplace).show(title="Laplaciano")
-Image.fromarray(imgT).show(title="Laplaciano")
+padding_size = ml.getPaddingSize(img2.shape, (11, 11))
+img2Media = ml.conv2D(img2, ml.MEAN_FILTER_11, padding=padding_size, padding_type='repeat')
+img2Mediana = ml.medianFilter(img2, (11, 11), padding_size, padding_type='repeat')
+img2MedianaAdaptativa = ml.adaptativeMedian(img2, (17, 17))
 
-# Image.fromarray(img_lowfilter).show(title="Filtro passa baixo (média)")
+titles2 = ["Imagem Original: ruidosa2.tif", "Filtro Média (11x11)", "Filtro Mediana", "Filtro Mediana Adaptativa"]
+images2 = [img2, img2Media, img2Mediana, img2MedianaAdaptativa]
+
+print("PSNR da imagem: ruidosa2.tif")
+print("Original: {}".format(ml.PSNR(imgOrig, img2)))
+print("Media: {}".format(ml.PSNR(imgOrig, img2Media)))
+print("Mediana: {}".format(ml.PSNR(imgOrig, img2Mediana)))
+print("Mediana Adaptativa: {}".format(ml.PSNR(imgOrig, img2MedianaAdaptativa)))
+
+ml.show_images(images1, 2, titles1)
+ml.show_images(images2, 2, titles2)

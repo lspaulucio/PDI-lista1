@@ -76,20 +76,13 @@ def equalizaHistograma(image):
     return img
 
 
-def MSE(imgOld, imgNew):
-    size = imgOld.shape
-    sum = 0
-    print(imgOld.shape, imgNew.shape)
-    for i in range(0, size[0]):
-        for j in range(0, size[1]):
-            sum += (imgOld[i][j] - imgNew[i][j]) ** 2
-
-    return sum / (size[0]*size[1])
+def MSE(imgOrig, imgNoise):
+    return np.square(imgOrig.astype(np.float) - imgNoise.astype(np.float)).mean()
 
 
-def PSNR(imgOld, imgNew):
-    mse = MSE(imgOld, imgNew)
-    return 20 * np.log(np.max(imgOld)/np.sqrt(mse))
+def PSNR(imgOrig, imgNoise):
+    mse = MSE(imgOrig, imgNoise)
+    return 20 * np.log10(255/np.sqrt(mse))
 
 
 def binarizaImg(img, threshold):
@@ -135,8 +128,8 @@ def paddingImage(img, padding_size=1, type='zeros'):
             new[-i-1, padding_size:-padding_size] = img[-1]
 
         for i in range(padding_size):
-            new[padding_size:-padding_size,i] = img[:,0]
-            new[padding_size:-padding_size,-i-1] = img[:,-1]
+            new[padding_size:-padding_size, i] = img[:, 0]
+            new[padding_size:-padding_size, -i-1] = img[:, -1]
 
         for i in range(padding_size):
             for j in range(padding_size):
@@ -148,7 +141,7 @@ def paddingImage(img, padding_size=1, type='zeros'):
     return new
 
 
-def conv2D(img, kernel, stride=1, padding=1, padding_value=0):
+def conv2D(img, kernel, stride=1, padding=1, padding_type='zeros'):
     shape = []
     paddedImg = []
     newImg = []
@@ -156,15 +149,15 @@ def conv2D(img, kernel, stride=1, padding=1, padding_value=0):
         size = getNewSize(img.shape[i], padding)
         shape.append(size)
 
-    # print(img.shape, shape) #padding 5 pra msm tamanho
     kernel = np.flip(kernel)
 
-    if padding_value == 0:
-        paddedImg = np.zeros((shape))
-    elif padding_value == 1:
-        paddedImg = np.full(shape, 255)
+    # if padding_value == 0:
+    #     paddedImg = np.zeros((shape))
+    # elif padding_value == 1:
+    #     paddedImg = np.full(shape, 255)
 
-    paddedImg[padding:-padding, padding:-padding] = img
+    # paddedImg[padding:-padding, padding:-padding] = img
+    paddedImg = paddingImage(img, padding, padding_type)
     newImg = np.zeros((getOutputSize(img.shape, kernel.shape, padding, stride)))
     x = kernel.shape[0]
     y = kernel.shape[1]
@@ -180,13 +173,14 @@ def conv2D(img, kernel, stride=1, padding=1, padding_value=0):
     return newImg
 
 
-def medianFilter(img, kernel_shape=(3, 3)):
+def medianFilter(img, kernel_shape=(3, 3), padding=1, padding_type='zeros'):
     newImg = np.zeros(img.shape)
+    paddedImg = paddingImage(img, padding, type=padding_type)
     x = kernel_shape[0]
     y = kernel_shape[1]
     for i in range(0, newImg.shape[0]):
         for j in range(0, newImg.shape[1]):
-            value = np.median(img[i:i+y, j:j+x])
+            value = np.median(paddedImg[i:i+y, j:j+x])
             if value < 0:
                 value = 0
             elif value > 255:
@@ -196,19 +190,77 @@ def medianFilter(img, kernel_shape=(3, 3)):
     return newImg
 
 
+def adaptativeMedian(img, Smax):
+    window_size = 3  # window initial size
+    padding_size = getPaddingSize(img.shape, Smax)
+    paddedImg = paddingImage(img, padding_size, 'repeat')
+    newImg = np.zeros(img.shape)
+    x, y = 0, 0
+    for i in range(padding_size, paddedImg.shape[0]-padding_size):
+        for j in range(padding_size, paddedImg.shape[1]-padding_size):
+            temp_size = window_size
+            stepA = True
+            value = 0
+            while(stepA):
+                s = temp_size // 2
+                window = paddedImg[i-s:i+s+1, j-s:j+s+1]
+                # print(temp_size)
+                # print(i,j,s)
+                # print(window)
+                zmed = np.median(window)
+                zmin = np.min(window)
+                zmax = np.max(window)
+                zxy = paddedImg[i, j]
+                # StepA
+                a1 = zmed - zmin                 # a1 = zmed -zmin
+                a2 = zmed - zmax                 # a2 = zmed - zmax
+                if a1 > 0 and a2 < 0:            # se a1 > 0 e a2 <0 goto step B
+                    # stepB
+                    b1 = zxy - zmin              # b1 = zxy - zmin
+                    b2 = zxy - zmax              # b2 = zxy - zmax
+                    if b1 > 0 and b2 < 0:        # se b1 > 0 e b2 < 0
+                        value = zxy              # saida e zxy
+                        stepA = False
+                    else:
+                        value = zmed             # senao saida e zmed
+                        stepA = False
+                else:
+                    # print(temp_size)
+                    temp_size += 2               # senao aumente sxy
+                    # print(temp_size)
+                    if temp_size <= Smax[0]:  # se window_size <= smax repita A
+                        stepA = True
+                    else:
+                        value = zmed             # senao saida e zmed
+                        stepA = False
+
+            if value < 0:
+                value = 0
+            elif value > 255:
+                value = 255
+            newImg[x][y] = value
+
+            y += 1
+        x += 1
+        y = 0
+        # print(i)
+
+    return newImg
+
+
 # ############################# Filters ################################
 
 MEAN_FILTER = np.ones((3, 3)) / 9.0
 
-MEAN_FILTER3 = np.ones((11, 11)) / (11*11)
+MEAN_FILTER_11 = np.ones((11, 11)) / (11*11)
 
 MEAN_FILTER2 = 1/16. * np.array([[1, 2, 1],
                                  [2, 4, 2],
                                  [1, 2, 1]])
 
 LAPLACE_FILTER2 = np.array([[-1, -1, -1],
-                           [-1,  9, -1],
-                           [-1, -1, -1]])
+                            [-1,  9, -1],
+                            [-1, -1, -1]])
 
 LAPLACE_FILTER = np.array([[-1, -1, -1],
                            [-1,  8, -1],

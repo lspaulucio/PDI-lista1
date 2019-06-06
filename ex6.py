@@ -9,7 +9,6 @@
 from PIL import Image
 import numpy as np
 from numpy import fft
-import matplotlib.pyplot as plt
 import copy
 import MyLib as ml
 
@@ -54,5 +53,6 @@ F = F[0:img.shape[0], 0:img.shape[1]]
 # Image.fromarray(F).show()
 images.append(copy.deepcopy(F))
 sortimages = [images[0], images[2], images[4], images[1], images[3], images[5]]
-titles = ["Imagem Original", "Filtro Notch", "Filtro Passa Baixa Butterworth", "FFT da Imagem Original", "Resultado com Filtro Notch", "Resultado com Filtro Butterworth"]
+titles = ["Imagem Original", "Filtro Notch", "Filtro Passa Baixa Butterworth", "FFT da Imagem Original",
+          "Resultado com Filtro Notch", "Resultado com Filtro Butterworth"]
 ml.show_images(sortimages, 2, titles)
