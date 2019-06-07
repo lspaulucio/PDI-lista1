@@ -1,4 +1,11 @@
 # -*- coding: utf-8 -*-
+
+""" Processamento Digital de Imagens
+    Aluno: Leonardo Santos Paulucio
+    Lista de Exercicios 1 - Pós-Graduação
+    Data: 09/05/19
+"""
+
 import copy
 import numpy as np
 import matplotlib.pyplot as plt
@@ -59,6 +66,7 @@ def equalizaHistograma(image):
 
     hist_eq = np.zeros(256)
     hist_eq[0] = histograma[0]
+
     for i in range(1, 256):
         hist_eq[i] = hist_eq[i-1] + histograma[i]
 
@@ -150,17 +158,11 @@ def conv2D(img, kernel, stride=1, padding=1, padding_type='zeros'):
         shape.append(size)
 
     kernel = np.flip(kernel)
-
-    # if padding_value == 0:
-    #     paddedImg = np.zeros((shape))
-    # elif padding_value == 1:
-    #     paddedImg = np.full(shape, 255)
-
-    # paddedImg[padding:-padding, padding:-padding] = img
     paddedImg = paddingImage(img, padding, padding_type)
     newImg = np.zeros((getOutputSize(img.shape, kernel.shape, padding, stride)))
-    x = kernel.shape[0]
-    y = kernel.shape[1]
+
+    x, y = kernel.shape[0], kernel.shape[1]
+
     for i in range(0, newImg.shape[0]):
         for j in range(0, newImg.shape[1]):
             value = (kernel * paddedImg[i:i+y, j:j+x]).sum()
@@ -176,8 +178,8 @@ def conv2D(img, kernel, stride=1, padding=1, padding_type='zeros'):
 def medianFilter(img, kernel_shape=(3, 3), padding=1, padding_type='zeros'):
     newImg = np.zeros(img.shape)
     paddedImg = paddingImage(img, padding, type=padding_type)
-    x = kernel_shape[0]
-    y = kernel_shape[1]
+    x, y = kernel_shape[0], kernel_shape[1]
+
     for i in range(0, newImg.shape[0]):
         for j in range(0, newImg.shape[1]):
             value = np.median(paddedImg[i:i+y, j:j+x])
@@ -204,9 +206,6 @@ def adaptativeMedian(img, Smax):
             while(stepA):
                 s = temp_size // 2
                 window = paddedImg[i-s:i+s+1, j-s:j+s+1]
-                # print(temp_size)
-                # print(i,j,s)
-                # print(window)
                 zmed = np.median(window)
                 zmin = np.min(window)
                 zmax = np.max(window)
@@ -225,9 +224,7 @@ def adaptativeMedian(img, Smax):
                         value = zmed             # senao saida e zmed
                         stepA = False
                 else:
-                    # print(temp_size)
                     temp_size += 2               # senao aumente sxy
-                    # print(temp_size)
                     if temp_size <= Smax[0]:  # se window_size <= smax repita A
                         stepA = True
                     else:
@@ -243,7 +240,6 @@ def adaptativeMedian(img, Smax):
             y += 1
         x += 1
         y = 0
-        # print(i)
 
     return newImg
 

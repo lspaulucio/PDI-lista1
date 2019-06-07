@@ -3,7 +3,7 @@
 """ Processamento Digital de Imagens
     Aluno: Leonardo Santos Paulucio
     Lista de Exercicios 1 - Pós-Graduação
-    Data: 19/05/19
+    Data: 09/05/19
 """
 
 from PIL import Image
@@ -18,6 +18,7 @@ sys.setrecursionlimit(5000)
 
 
 def conta(img, i, j):
+    """ Funcao que realiza a contagem da area de um palito, utilizando recursao"""
     shape = img.shape
 
     # Testing indexes
@@ -33,6 +34,8 @@ def conta(img, i, j):
 
 
 def contaPalito(image):
+    """ Funcao que recebe a imagem para contagem dos palitos """
+
     img = copy.deepcopy(image)
     shape = img.shape
 
@@ -41,7 +44,6 @@ def contaPalito(image):
     d = {}
     for j in range(0, shape[1]):
         if(img[lin][j] == 255):
-            # print(lin, j)
             tam = conta(img, lin, j)
             i += 1
             d[i] = tam
@@ -49,20 +51,20 @@ def contaPalito(image):
     print("Foram encontrados {} palitos.".format(i))
 
 
-fig = plt.figure()
-img = Image.open('images/Fig8.02.jpg')
-img = np.array(img)
+img = Image.open('images/Fig8.02.jpg')              # Le a imagem
+img = np.array(img)                                 # Converte a imagem para um numpy array
 
-histograma = ml.calculaHistograma(img)
-plt.title("Histograma Original")
-plt.bar(histograma[0], histograma[1])
+histograma = ml.calculaHistograma(img)              # Calcula o histograma da imagem
+fig = plt.figure()                                  # Cria uma nova figura
+plt.title("Histograma Original")                    # Adiciona o titulo na figura
+plt.bar(histograma[0], histograma[1])               # Gera o histograma
 
-THRESHOLD = 160
+THRESHOLD = 160                                     # Threshold escolhido
 
-imgBin = ml.binarizaImg(img, THRESHOLD)
+imgBin = ml.binarizaImg(img, THRESHOLD)             # Binariza a imagem
 
-contaPalito(imgBin)
+contaPalito(imgBin)                                 # Conta os palitos e calcula suas areas
 
-images = [img, imgBin]
-titles = ["Imagem Original", "Imagem Binarizada"]
-ml.show_images(images, 1, titles)
+images = [img, imgBin]                              # Lista de imagens que serao mostradas
+titles = ["Imagem Original", "Imagem Binarizada"]   # Titulos das imagens
+ml.show_images(images, 1, titles)                   # Imprime as imagens na tela

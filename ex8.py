@@ -3,7 +3,7 @@
 """ Processamento Digital de Imagens
     Aluno: Leonardo Santos Paulucio
     Lista de Exercicios 1 - Pós-Graduação
-    Data: 19/05/19
+    Data: 09/05/19
 """
 
 from PIL import Image
