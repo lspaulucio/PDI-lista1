@@ -24,7 +24,7 @@ img1Media = ml.conv2D(img1, ml.MEAN_FILTER_11, padding=padding_size, padding_typ
 img1Mediana = ml.medianFilter(img1, (11, 11), padding_size, padding_type='repeat')
 img1MedianaAdaptativa = ml.adaptativeMedian(img1, (17, 17))
 
-titles1 = ["Imagem Original: ruidosa1.tif", "Filtro Média (11x11)", "Filtro Mediana", "Filtro Mediana Adaptativa"]
+titles1 = ["Imagem Original: ruidosa1.tif", "Filtro Média (11x11)", "Filtro Mediana (11x11)", "Filtro Mediana Adaptativa"]
 images1 = [img1, img1Media, img1Mediana, img1MedianaAdaptativa]
 
 print("PSNR da imagem: ruidosa1.tif")
@@ -38,7 +38,7 @@ img2Media = ml.conv2D(img2, ml.MEAN_FILTER_11, padding=padding_size, padding_typ
 img2Mediana = ml.medianFilter(img2, (11, 11), padding_size, padding_type='repeat')
 img2MedianaAdaptativa = ml.adaptativeMedian(img2, (17, 17))
 
-titles2 = ["Imagem Original: ruidosa2.tif", "Filtro Média (11x11)", "Filtro Mediana", "Filtro Mediana Adaptativa"]
+titles2 = ["Imagem Original: ruidosa2.tif", "Filtro Média (11x11)", "Filtro Mediana (11x11)", "Filtro Mediana Adaptativa"]
 images2 = [img2, img2Media, img2Mediana, img2MedianaAdaptativa]
 
 print("PSNR da imagem: ruidosa2.tif")
